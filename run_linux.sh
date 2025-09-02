@@ -2,10 +2,10 @@
 # Cria ambiente virtual, instala dependências e executa o script principal
 
 # Cria o ambiente virtual se não existir
-test -d venv || python -m venv venv
+test -d .venv || python -m venv .venv
 
 # Ativa o ambiente virtual
-source venv/Scripts/activate
+source .venv/bin/activate
 
 # Instala dependências
 pip install -r requirements.txt
