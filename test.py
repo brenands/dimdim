@@ -9,8 +9,8 @@ def pegar_cor(x, y):
     img = pyautogui.screenshot(region=(x, y, 1, 1))
     return img.getpixel((0, 0))
 
-while True: 
-    contador += 1 
+while True:
+    contador += 1
     print(f"Iniciando repetição nº {contador}")
     alvo = (255, 203, 119)  # cor principal
     corx, cory = 1341, 455  # pixel principal
@@ -22,7 +22,7 @@ while True:
 
     print("Esperando pela cor", alvo, "no pixel", (corx, cory))
     tempo_inicial = time.time()
-    
+
     while True:
         cor = pegar_cor(corx, cory)
         cor_extra = pegar_cor(extra_x, extra_y)  # checa também a cor extra
@@ -32,7 +32,7 @@ while True:
             delay = random.randint(10, 60)
             print(f"Aguardando {delay} segundos antes de continuar...")
             time.sleep(delay)
-            print("Continuando...") 
+            print("Continuando...")
             break
 
         # Se passar de 5 minutos (300s)
