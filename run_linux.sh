@@ -2,7 +2,7 @@
 # Cria ambiente virtual, instala dependências e executa o script principal
 
 # Cria o ambiente virtual se não existir
-test -d .venv || python -m venv .venv
+test -d .venv || python3 -m venv .venv
 
 # Ativa o ambiente virtual
 source .venv/bin/activate
@@ -11,4 +11,4 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Executa o script principal
-python main.py
+python3 main.py
