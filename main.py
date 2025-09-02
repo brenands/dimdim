@@ -1,0 +1,55 @@
+import pyautogui
+import time
+import random
+
+contador = 0
+
+def pegar_cor(x, y):
+    img = pyautogui.screenshot(region=(x, y, 1, 1))  # captura só 1x1 pixel (mais rápido)
+    return img.getpixel((0, 0))  # retorna a cor no pixel
+
+while True: 
+    contador += 1 
+    print(f"Iniciando repetição nº {contador}")
+    alvo = (255, 203, 119)
+    corx, cory = 1341, 455
+
+    print("Esperando pela cor", alvo, "no pixel", (corx, cory))
+    tempo_inicial = time.time()
+    
+    while True:
+        cor = pegar_cor(corx, cory)
+        # Se a cor aparecer
+        if cor == alvo:
+            delay = random.randint(10, 60)
+            print(f"Aguardando {delay} segundos antes de continuar...")
+            time.sleep(delay)
+            print("Continuando...") 
+            break
+        # Se passar de 5 minutos (300s)
+        if time.time() - tempo_inicial > 300:
+            print("Tempo limite de 5 minutos atingido. Clicando no pixel de verificação e reiniciando espera...")
+            pyautogui.click(corx, cory)
+            tempo_inicial = time.time()  # reinicia o contador de tempo
+        time.sleep(0.5)
+
+    time.sleep(5)
+    pyautogui.scroll(1500)
+    time.sleep(5)
+    x, y = 1503, 826
+    pyautogui.click(x, y)
+
+    time.sleep(5)
+    pyautogui.scroll(1500)
+    time.sleep(5)
+    x2, y2 = 1523, 639
+    pyautogui.click(x2, y2)
+
+    time.sleep(5)
+    pyautogui.scroll(1500)
+    time.sleep(5)
+    x3, y3 = 269, 346
+    pyautogui.click(x3, y3)
+    time.sleep(5)
+    pyautogui.scroll(1500)
+    pyautogui.click(95, 59)
