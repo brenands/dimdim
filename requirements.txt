@@ -1,3 +1,4 @@
 pyautogui
 pyscreeze
 pillow
+keyboard
