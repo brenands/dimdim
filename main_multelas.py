@@ -7,27 +7,21 @@ import sys
 import keyboard
 import threading
 
-# --- Controle global para parar todas as ações ---
+# --- Controle global ---
 parar = False
 
-# --- Função: captura a cor de um pixel específico ---
+# --- Contadores persistentes para cada navegador ---
+contadores = {}
+
+# --- Função: captura a cor de um pixel ---
 def pegar_cor(x, y):
-    """
-    Usa mss para capturar um único pixel na posição (x, y).
-    Funciona mesmo com a tela desligada ou em segundo plano.
-    Retorna uma tupla RGB: (R, G, B)
-    """
     with mss.mss() as sct:
         monitor = {"top": y, "left": x, "width": 1, "height": 1}
         img = sct.grab(monitor)
-        return img.pixel(0, 0)  # Retorna cor em formato RGB
+        return img.pixel(0, 0)
 
 # --- Função auxiliar: executa a sequência de cliques e scrolls ---
 def executar_sequencia(config):
-    """
-    Executa a lista de ações definida em 'sequencia_cliques'.
-    Exemplo: (espera, "click", (x, y)) ou (espera, "scroll", valor)
-    """
     for (espera, acao, valor) in config["sequencia_cliques"]:
         if parar:
             return
@@ -39,71 +33,65 @@ def executar_sequencia(config):
 
 # --- Função principal: rotina para cada navegador ---
 def rotina_navegador(config):
-    """
-    Executa a rotina completa de um navegador:
-    1. Ativa a janela (clica na barra de tarefas)
-    2. Verifica IMEDIATAMENTE se a cor extra está presente (popup/notificação)
-    3. Se configurado, espera pela cor principal
-    4. Executa a sequência de ações
-    5. Retorna para o próximo navegador
-    """
-    global parar
+    global parar, contadores
     nome = config["nome"]
-    contador = 0
 
-    while not parar:
-        contador += 1
-        hora_atual = datetime.now().strftime("[%H:%M:%S]")
-        print(f"{hora_atual} [{nome}] Iniciando repetição nº {contador}")
+    # Inicializa o contador para este navegador, se ainda não existir
+    if nome not in contadores:
+        contadores[nome] = 0
 
-        # === 1. Ativa a janela do navegador (clica na barra de tarefas) ===
-        pyautogui.click(*config["pixel_ativar"])
-        time.sleep(1)  # tempo para garantir que a janela está ativa
+    # Incrementa o contador
+    contadores[nome] += 1
+    contador = contadores[nome]
+    hora_atual = datetime.now().strftime("[%H:%M:%S]")
+    print(f"{hora_atual} [{nome}] Iniciando repetição nº {contador}")
 
-        # === 2. Verificação IMEDIATA da cor extra (popup, notificação, erro, etc) ===
-        alvo_extra = config["cor_extra"]
-        extra_x, extra_y = config["pixel_extra"]
+    # === 1. Ativa a janela do navegador ===
+    pyautogui.click(*config["pixel_ativar"])
+    time.sleep(1)
 
-        cor_extra = pegar_cor(extra_x, extra_y)
-        if cor_extra == alvo_extra:
-            print(f"{hora_atual} [{nome}] Cor extra detectada ao ativar -> clicando em ({extra_x}, {extra_y})")
-            pyautogui.click(extra_x, extra_y)
-            time.sleep(1)  # pequeno delay para interface reagir
+    # === 2. Verificação IMEDIATA da cor extra (popup, notificação) ===
+    alvo_extra = config["cor_extra"]
+    extra_x, extra_y = config["pixel_extra"]
 
-        # === 3. Verifica se deve esperar pela cor principal (só para Navegador 1) ===
-        if config.get("esperar_cor", True):  # padrão: True
-            alvo = config["cor_principal"]
-            corx, cory = config["pixel_principal"]
+    cor_extra = pegar_cor(extra_x, extra_y)
+    if cor_extra == alvo_extra:
+        print(f"{hora_atual} [{nome}] Cor extra detectada ao ativar -> clicando em ({extra_x}, {extra_y})")
+        pyautogui.click(extra_x, extra_y)
+        time.sleep(1)
 
-            print(f"{hora_atual} [{nome}] Esperando pela cor {alvo} no pixel ({corx}, {cory})")
-            tempo_inicial = time.time()
+    # === 3. Verifica se deve esperar pela cor principal (só para Navegador 1) ===
+    if config.get("esperar_cor", True):
+        alvo = config["cor_principal"]
+        corx, cory = config["pixel_principal"]
 
-            while not parar:
-                cor = pegar_cor(corx, cory)
-                if cor == alvo:
-                    delay = random.randint(1, 10)
-                    print(f"{hora_atual} [{nome}] Cor detectada -> aguardando {delay}s antes de continuar...")
-                    time.sleep(delay)
-                    break  # sai do loop de espera
+        print(f"{hora_atual} [{nome}] Esperando pela cor {alvo} no pixel ({corx}, {cory})")
+        tempo_inicial = time.time()
 
-                # Timeout: se passar 5 minutos sem detectar a cor
-                if time.time() - tempo_inicial > 300:  # 300 segundos = 5 minutos
-                    print(f"{hora_atual} [{nome}] Tempo limite atingido -> clicando em reset {config['pixel_reset']}")
-                    pyautogui.click(*config["pixel_reset"])
-                    tempo_inicial = time.time()  # reinicia o cronômetro
+        while not parar:
+            cor = pegar_cor(corx, cory)
+            if cor == alvo:
+                delay = random.randint(1, 10)
+                print(f"{hora_atual} [{nome}] Cor detectada -> aguardando {delay}s antes de continuar...")
+                time.sleep(delay)
+                break
 
-                time.sleep(0.5)  # evita uso excessivo de CPU
-        else:
-            # === Modo direto: Navegador 2 não espera cor principal ===
-            print(f"{hora_atual} [{nome}] Modo direto: pulando espera de cor principal e seguindo para ações.")
-            time.sleep(2)  # pequeno delay para garantir estabilidade
+            # Timeout de 5 minutos
+            if time.time() - tempo_inicial > 300:
+                print(f"{hora_atual} [{nome}] Tempo limite atingido -> clicando em reset {config['pixel_reset']}")
+                pyautogui.click(*config["pixel_reset"])
+                tempo_inicial = time.time()
 
-        # === 4. Executa a sequência de cliques e scrolls ===
-        executar_sequencia(config)
+            time.sleep(0.5)
+    else:
+        print(f"{hora_atual} [{nome}] Modo direto: pulando espera de cor principal.")
+        time.sleep(2)
 
-        # === 5. Finaliza esta execução e volta ao loop principal ===
-        return  # Sai da função para o próximo navegador
+    # === 4. Executa a sequência de cliques e scrolls ===
+    executar_sequencia(config)
 
+    # === 5. Finaliza esta execução ===
+    return  # Volta ao loop principal
 
 # --- Sequência padrão de cliques (reutilizável) ---
 sequencia_padrao = [
@@ -119,8 +107,8 @@ config_navegador1 = {
     "cor_principal": (255, 203, 119),     # Cor a detectar (ex: botão habilitado)
     "pixel_principal": (1378, 426),       # Onde verificar a cor principal
     "cor_extra": (24, 51, 31),            # Cor do popup ou notificação
-    "pixel_extra": (952, 765),            # Onde verificar a cor extra
-    "clique_extra": (952, 765),           # Onde clicar se detectar cor extra
+    "pixel_extra": (948, 850),            # Onde verificar a cor extra
+    "clique_extra": (948, 850),           # Onde clicar se detectar cor extra
     "pixel_reset": (1633, 99),            # Botão de reset (ex: recarregar)
     "sequencia_cliques": sequencia_padrao,
     "pixel_ativar": (214, 1050),          # Posição do ícone na barra de tarefas
@@ -132,8 +120,8 @@ config_navegador2 = {
     "cor_principal": (255, 203, 119),     # Irrelevante (não usado)
     "pixel_principal": (1378, 426),       # Mantido por compatibilidade
     "cor_extra": (24, 51, 31),            # Mesma cor extra
-    "pixel_extra": (952, 765),            # Mesmo local de verificação
-    "clique_extra": (952, 765),           # Mesmo clique
+    "pixel_extra": (948, 850),            # Mesmo local de verificação
+    "clique_extra": (948, 850),           # Mesmo clique
     "pixel_reset": (1633, 99),
     "sequencia_cliques": sequencia_padrao,
     "pixel_ativar": (260, 1050),           # Ícone do segundo navegador
