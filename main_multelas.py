@@ -111,7 +111,7 @@ config_navegador1 = {
     "clique_extra": (948, 850),           # Onde clicar se detectar cor extra
     "pixel_reset": (1633, 99),            # Botão de reset (ex: recarregar)
     "sequencia_cliques": sequencia_padrao,
-    "pixel_ativar": (214, 1050),          # Posição do ícone na barra de tarefas
+    "pixel_ativar": (65, 100),          # Posição do ícone na barra de tarefas
     "esperar_cor": True                   # Sim, espera a cor principal
 }
 
@@ -124,7 +124,7 @@ config_navegador2 = {
     "clique_extra": (948, 850),           # Mesmo clique
     "pixel_reset": (1633, 99),
     "sequencia_cliques": sequencia_padrao,
-    "pixel_ativar": (260, 1050),           # Ícone do segundo navegador
+    "pixel_ativar": (65, 100),             # Ícone do segundo navegador
     "esperar_cor": False                   # Não espera cor principal
 }
 
