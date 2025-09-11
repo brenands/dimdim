@@ -71,7 +71,7 @@ def rotina_navegador(config):
         while not parar:
             cor = pegar_cor(corx, cory)
             if cor == alvo:
-                delay = random.randint(1, 10)
+                delay = random.randint(1, 5)
                 print(f"{hora_atual} [{nome}] Cor detectada -> aguardando {delay}s antes de continuar...")
                 time.sleep(delay)
                 break
@@ -98,7 +98,7 @@ sequencia_padrao = [
     (3, "click", (1503, 818)),   # Clique 1: ex. botão de ação
     (2, "scroll", 1500),         # Rola para cima (ajuste conforme necessário)
     (3, "click", (1531, 634)),   # Clique 2: outra interação
-    (3, "click", (676, 101))     # Clique 3: ex. atualizar página ou aba
+    (3, "click", (65, 100)),     # Clique 3: ex. atualizar página ou aba
 ]
 
 # --- Configurações dos navegadores ---
@@ -109,9 +109,9 @@ config_navegador1 = {
     "cor_extra": (24, 51, 31),            # Cor do popup ou notificação
     "pixel_extra": (948, 850),            # Onde verificar a cor extra
     "clique_extra": (948, 850),           # Onde clicar se detectar cor extra
-    "pixel_reset": (1633, 99),            # Botão de reset (ex: recarregar)
+    "pixel_reset": (65, 100),            # Botão de reset (ex: recarregar)
     "sequencia_cliques": sequencia_padrao,
-    "pixel_ativar": (65, 100),          # Posição do ícone na barra de tarefas
+    "pixel_ativar": (214, 1050),          # Posição do ícone na barra de tarefas
     "esperar_cor": True                   # Sim, espera a cor principal
 }
 
@@ -122,14 +122,66 @@ config_navegador2 = {
     "cor_extra": (24, 51, 31),            # Mesma cor extra
     "pixel_extra": (948, 850),            # Mesmo local de verificação
     "clique_extra": (948, 850),           # Mesmo clique
-    "pixel_reset": (1633, 99),
+    "pixel_reset": (65, 100),
     "sequencia_cliques": sequencia_padrao,
-    "pixel_ativar": (65, 100),             # Ícone do segundo navegador
+    "pixel_ativar": (260, 1050),           # Ícone do segundo navegador
+    "esperar_cor": False                   # Não espera cor principal
+}
+
+config_navegador3 = {
+    "nome": "Navegador 3",
+    "cor_principal": (255, 203, 119),     # Irrelevante (não usado)
+    "pixel_principal": (1378, 426),       # Mantido por compatibilidade
+    "cor_extra": (24, 51, 31),            # Mesma cor extra
+    "pixel_extra": (948, 850),            # Mesmo local de verificação
+    "clique_extra": (948, 850),           # Mesmo clique
+    "pixel_reset": (65, 100),
+    "sequencia_cliques": sequencia_padrao,
+    "pixel_ativar": (300, 1050),           # Ícone do segundo navegador
+    "esperar_cor": False                   # Não espera cor principal
+}
+
+config_navegador4 = {
+    "nome": "Navegador 4",
+    "cor_principal": (255, 203, 119),     # Irrelevante (não usado)
+    "pixel_principal": (1378, 426),       # Mantido por compatibilidade
+    "cor_extra": (24, 51, 31),            # Mesma cor extra
+    "pixel_extra": (948, 850),            # Mesmo local de verificação
+    "clique_extra": (948, 850),           # Mesmo clique
+    "pixel_reset": (65, 100),
+    "sequencia_cliques": sequencia_padrao,
+    "pixel_ativar": (350, 1050),           # Ícone do segundo navegador
+    "esperar_cor": False                   # Não espera cor principal
+}
+
+config_navegador5 = {
+    "nome": "Navegador 5",
+    "cor_principal": (255, 203, 119),     # Irrelevante (não usado)
+    "pixel_principal": (1378, 426),       # Mantido por compatibilidade
+    "cor_extra": (24, 51, 31),            # Mesma cor extra
+    "pixel_extra": (948, 850),            # Mesmo local de verificação
+    "clique_extra": (948, 850),           # Mesmo clique
+    "pixel_reset": (65, 100),
+    "sequencia_cliques": sequencia_padrao,
+    "pixel_ativar": (400, 1050),           # Ícone do segundo navegador
+    "esperar_cor": False                   # Não espera cor principal
+}
+
+config_navegador6 = {
+    "nome": "Navegador 6",
+    "cor_principal": (255, 203, 119),     # Irrelevante (não usado)
+    "pixel_principal": (1378, 426),       # Mantido por compatibilidade
+    "cor_extra": (24, 51, 31),            # Mesma cor extra
+    "pixel_extra": (948, 850),            # Mesmo local de verificação
+    "clique_extra": (948, 850),           # Mesmo clique
+    "pixel_reset": (65, 100),
+    "sequencia_cliques": sequencia_padrao,
+    "pixel_ativar": (440, 1050),           # Ícone do segundo navegador
     "esperar_cor": False                   # Não espera cor principal
 }
 
 # Lista de configurações (ordem de execução)
-configs = [config_navegador1, config_navegador2]
+configs = [config_navegador1, config_navegador2, config_navegador3, config_navegador4, config_navegador5, config_navegador6]
 
 # --- Thread: monitora tecla ESC (2x em até 5 segundos para parar) ---
 def monitorar_tecla():
